@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Date
+from sqlalchemy import create_engine, Column, Integer, String, Date, DateTime, Float, Boolean, ForeignKey
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -36,7 +36,23 @@ class Visits(Base):
     __tablename__ = "visits"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String)
+    client_id = Column(ForeignKey("clients.id"), nullable=False)
+    date = Column(DateTime, nullable=False)
+
+
+class Products(Base):
+    __tablename__ = "products"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    type = Column(String, nullable=False) #tipo facial, corporal
+    category = Column(String, nullable=False) #categoria locion, crema, serum, mascara
+    laboratory = Column(String, nullable=False)
+    size = Column(Integer, nullable=False)
+    unit = Column(String, nullable=False) #unidad de medida gramos, cm3
+    price = Column(Float, nullable=False)
+    stock = Column(Boolean, nullable=False)
+    image_url = Column(String, nullable=False)
 
 
 Base.metadata.create_all(
