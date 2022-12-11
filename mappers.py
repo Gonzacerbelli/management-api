@@ -24,6 +24,7 @@ def product_mapper(product_data):
     return {
         "id": product_data.id,
         "name": product_data.name,
+        "description": product_data.description,
         "type": product_data.type,
         "category": product_data.category,
         "laboratory": product_data.laboratory,

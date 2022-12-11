@@ -324,6 +324,7 @@ def get_visits():
 def create_products():
     try:
         name = request.form.get("name")
+        description = request.form.get("description")
         type = request.form.get("type")
         category = request.form.get("category")
         laboratory = request.form.get("laboratory")
@@ -333,8 +334,8 @@ def create_products():
         stock = bool(int(request.form.get("stock")))
         image_url = request.form.get("image_url")
 
-        product = Products(name=name, type=type, category=category, laboratory=laboratory,
-                           size=size, unit=unit, price=price, stock=stock, image_url=image_url)
+        product = Products(name=name, description=description, type=type, category=category,
+                           laboratory=laboratory, size=size, unit=unit, price=price, stock=stock, image_url=image_url)
         db_session.add(product)
         db_session.commit()
 
@@ -349,6 +350,7 @@ def update_product(id):
     try:
         response = None
         name = request.form.get("name")
+        description = request.form.get("description")
         type = request.form.get("type")
         category = request.form.get("category")
         laboratory = request.form.get("laboratory")
@@ -363,7 +365,7 @@ def update_product(id):
             response = Response('Product with id {} does not exist'.format(
                 id), status=200, mimetype='application/json')
         else:
-            Products.query.filter_by(id=id).update(dict(name=name, type=type, category=category,
+            Products.query.filter_by(id=id).update(dict(name=name, description=description, type=type, category=category,
                                                         laboratory=laboratory, size=size, unit=unit, price=price, stock=stock, image_url=image_url))
             db_session.commit()
             response = Response('Product with id {} updated successfully'.format(
