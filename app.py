@@ -148,6 +148,56 @@ def get_client(id):
         return Response(json.dumps({"error": str(e)}), status=500, mimetype='application/json')
 
 
+@app.route("/client/<id>", methods=["PUT"])
+def update_client(id):
+    try:
+        response = None
+        name = request.form.get("name")
+        email = request.form.get("email")
+        document = int(request.form.get("document"))
+        phone = int(request.form.get("phone"))
+        address = request.form.get("address")
+        city = request.form.get("city")
+        birthday = datetime.strptime(request.form.get("birthday"), '%d/%m/%Y')
+        sex = request.form.get("sex")
+
+        client_data = Clients.query.get(id)
+        if client_data is None:
+            response = Response('Client with id {} does not exist'.format(
+                id), status=200, mimetype='application/json')
+        else:
+            Clients.query.filter_by(id=id).update(dict(
+                name=name, email=email, document=document, phone=phone, address=address, city=city, birthday=birthday, sex=sex))
+            db_session.commit()
+            response = Response('Client with id {} updated successfully'.format(
+                id), status=200, mimetype='application/json')
+
+        return response
+
+    except Exception as e:
+        return Response(json.dumps({"error": str(e)}), status=500, mimetype='application/json')
+
+
+@app.route("/client/<id>", methods=["DELETE"])
+def delete_client(id):
+    try:
+        response = None
+        client_data = Clients.query.get(id)
+        if client_data is None:
+            response = Response('Client with id {} does not exist'.format(
+                id), status=200, mimetype='application/json')
+        else:
+            db_session.delete(client_data)
+            db_session.commit()
+            response = Response('Client with id {} deleted successfully'.format(
+                id), status=200, mimetype='application/json')
+
+        return response
+
+    except Exception as e:
+        return Response(json.dumps({"error": str(e)}), status=500, mimetype='application/json')
+
+
 @app.route("/clients", methods=["GET"])
 def get_clients():
     try:
@@ -182,6 +232,54 @@ def create_visits():
             db_session.commit()
             response = Response("{}'s visit at {} created successfully".format(
                 client.name, date), status=201, mimetype='application/json')
+        return response
+
+    except Exception as e:
+        return Response(json.dumps({"error": str(e)}), status=500, mimetype='application/json')
+
+
+@app.route("/visit/<id>", methods=["PUT"])
+def update_visit(id):
+    try:
+        response = None
+        client_id = request.form.get("client_id")
+        date = datetime.strptime(request.form.get(
+            "datetime"), '%d/%m/%Y %H:%M:%S')
+        client = Clients.query.filter_by(id=client_id).first()
+
+        if client is None:
+            response = Response("Client with id {} does not exist".format(
+                client_id), status=404, mimetype='application/json')
+        visit = Visits.query.get(id)
+        if visit is None:
+            response = Response("Visit with id {} does not exist".format(
+                id), status=404, mimetype='application/json')
+        else:
+            Visits.query.filter_by(id=id).update(dict(
+                date=date, client_id=client_id))
+            db_session.commit()
+            response = Response("Visit with id {} updated successfully".format(
+                id), status=200, mimetype='application/json')
+        return response
+
+    except Exception as e:
+        return Response(json.dumps({"error": str(e)}), status=500, mimetype='application/json')
+
+
+@app.route("/visit/<id>", methods=["DELETE"])
+def delete_visit(id):
+    try:
+        response = None
+        visit = Visits.query.get(id)
+        if visit is None:
+            response = Response('Visit with id {} does not exist'.format(
+                id), status=200, mimetype='application/json')
+        else:
+            db_session.delete(visit)
+            db_session.commit()
+            response = Response('Visit with id {} deleted successfully'.format(
+                id), status=200, mimetype='application/json')
+
         return response
 
     except Exception as e:
@@ -241,6 +339,57 @@ def create_products():
         db_session.commit()
 
         return Response("Product {} created successfully".format(name), status=201, mimetype='application/json')
+
+    except Exception as e:
+        return Response(json.dumps({"error": str(e)}), status=500, mimetype='application/json')
+
+
+@app.route("/product/<id>", methods=["PUT"])
+def update_product(id):
+    try:
+        response = None
+        name = request.form.get("name")
+        type = request.form.get("type")
+        category = request.form.get("category")
+        laboratory = request.form.get("laboratory")
+        size = request.form.get("size")
+        unit = request.form.get("unit")
+        price = request.form.get("price")
+        stock = bool(int(request.form.get("stock")))
+        image_url = request.form.get("image_url")
+
+        product = Products.query.get(id)
+        if product is None:
+            response = Response('Product with id {} does not exist'.format(
+                id), status=200, mimetype='application/json')
+        else:
+            Products.query.filter_by(id=id).update(dict(name=name, type=type, category=category,
+                                                        laboratory=laboratory, size=size, unit=unit, price=price, stock=stock, image_url=image_url))
+            db_session.commit()
+            response = Response('Product with id {} updated successfully'.format(
+                id), status=200, mimetype='application/json')
+
+        return response
+
+    except Exception as e:
+        return Response(json.dumps({"error": str(e)}), status=500, mimetype='application/json')
+
+
+@app.route("/product/<id>", methods=["DELETE"])
+def delete_product(id):
+    try:
+        response = None
+        product = Products.query.get(id)
+        if product is None:
+            response = Response('Product with id {} does not exist'.format(
+                id), status=200, mimetype='application/json')
+        else:
+            db_session.delete(product)
+            db_session.commit()
+            response = Response('Product with id {} deleted successfully'.format(
+                id), status=200, mimetype='application/json')
+
+        return response
 
     except Exception as e:
         return Response(json.dumps({"error": str(e)}), status=500, mimetype='application/json')
